@@ -15,7 +15,15 @@ def scolor(mini, maxi, s):
    g = lambda x : r(255-x)
    s = 255*(s-mini)/(maxi-mini)
    return '#%02X%02X%02X' % (r(s),g(s),0)
-   
+
+fr = io.open('POP.csv', 'r', encoding='utf8')
+noPeople = ['lakes', 'gl']
+for s in fr.read().splitlines():
+   x = s.split(';')
+   if int(x[1]) < 3000000:
+      noPeople.append(x[0].lower())
+fr.close()
+
 d = {}
 fr = io.open('ratings_treated_code.csv', 'r', encoding='utf8')
 ratings = []
@@ -38,7 +46,7 @@ fr.close()
 tree = etree.parse('Codeforces_rating.svg')
 root = tree.getroot()[0]
 for child in root:
-   if 'id' in child.attrib and not child.attrib['id'] in ['lakes', 'gl']:
+   if 'id' in child.attrib and (child.attrib['id'] in d or not child.attrib['id'] in noPeople):
       s = int(d[child.attrib['id']][0]) if child.attrib['id'] in d else minRating
       color = scolor(minRating, maxRating, s)
       for path in child.iter('{http://www.w3.org/2000/svg}path'):
