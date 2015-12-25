@@ -14,6 +14,7 @@ with io.open('ratings.json', 'r', encoding='utf8') as f:
    for x in data['result']:
       if 'country' in x and 'rating' in x :
          ratings.append(int(x['rating']))
+   print np.mean(ratings), np.std(ratings)
    d = {}
    for x in ratings:
       if not x in d:

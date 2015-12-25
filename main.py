@@ -10,10 +10,12 @@ import random
 import io
 import numpy as np
 
-def random_color():
-    r = lambda: random.randint(0,255)
-    return '#%02X%02X%02X' % (r(),r(),r())
-
+def scolor(mini, maxi, s):
+   r = lambda x : min(255, 2*x)
+   g = lambda x : r(255-x)
+   s = 255*(s-mini)/(maxi-mini)
+   return '#%02X%02X%02X' % (r(s),g(s),0)
+   
 d = {}
 fr = io.open('ratings_treated_code.csv', 'r', encoding='utf8')
 ratings = []
@@ -25,15 +27,17 @@ for s in fr.read().splitlines():
    d[x[0]] = [x[1], x[2]]
    ratings.append(x[1])
    people.append(x[2])
-print np.mean(ratings), np.std(ratings)
+minRating = min(ratings)
+maxRating = max(ratings)
+#print np.mean(ratings), np.std(ratings)
 fr.close()
 
 tree = etree.parse('Codeforces_rating.svg')
 root = tree.getroot()[0]
 for child in root:
-   if 'id' in child.attrib and child.attrib['id'] in d:
-      color = random_color()
-      for path in child.iter('{http://www.w3.org/2000/svg}path'):
-         path.attrib['fill'] = color
+   s = int(d[child.attrib['id']][0]) if 'id' in child.attrib and child.attrib['id'] in d else minRating
+   color = scolor(minRating, maxRating, s)
+   for path in child.iter('{http://www.w3.org/2000/svg}path'):
+      path.attrib['fill'] = color
 
 tree.write('Codeforces_rating_treated.svg')
