@@ -9,11 +9,13 @@ import sys
 import random
 import io
 import numpy as np
+import math
 
 def scolor(mini, maxi, s):
    r = lambda x : min(255, 2*x)
    g = lambda x : r(255-x)
-   s = 255*s/maxi
+   if s <> 0:
+      s = 255*(math.log10(s/mini))/(math.log10(maxi/mini))
    return '#%02X%02X%02X' % (r(s),g(s),0)
 
 fr = io.open('POP.csv', 'r', encoding='utf8')
@@ -34,7 +36,6 @@ for s in fr.read().splitlines():
    d[x[0]] = x[1], x[2]
    ratings.append(x[1])
    people.append(x[2])
-   print x[0], people[-1]
 fr.close()
 minPeople = min(people)
 maxPeople = max(people)
