@@ -11,8 +11,12 @@ for s in fr.read().splitlines():
    d[x[0].lower()] = x[1].lower()
 fr.close()
 fr = io.open('ratings_treated.csv', 'r', encoding='utf8')
+fw = io.open('ratings_treated_code.csv', 'w', encoding='utf8')
 for s in fr.read().splitlines():
    x = s.split(';')
    if not x[0].lower() in d:
       print x[0]
+   else:
+      fw.write(d[x[0].lower()] + ';' + str(x[1]) + ';' + str(x[2]) + '\n')
 fr.close()
+fw.close()
