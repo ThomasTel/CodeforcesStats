@@ -17,11 +17,10 @@ def scolor(mini, maxi, s):
    return '#%02X%02X%02X' % (r(s),g(s),0)
 
 fr = io.open('POP.csv', 'r', encoding='utf8')
-noPeople = ['lakes', 'gl']
+pop = {}
 for s in fr.read().splitlines():
    x = s.split(';')
-   if int(x[1]) < 3000000:
-      noPeople.append(x[0].lower())
+   pop[x[0].lower()] = int(x[1])
 fr.close()
 
 d = {}
@@ -35,18 +34,17 @@ for s in fr.read().splitlines():
    d[x[0]] = x[1], x[2]
    ratings.append(x[1])
    people.append(x[2])
+fr.close()
 for k, (a, b) in d.items():
-   if b < 5:
+   if b < pop[k] / 5000000:
       del d[k]
 minRating = min(ratings) - 50
 maxRating = max(ratings)
-#print np.mean(ratings), np.std(ratings)
-fr.close()
 
 tree = etree.parse('Codeforces_rating.svg')
 root = tree.getroot()[0]
 for child in root:
-   if 'id' in child.attrib and (child.attrib['id'] in d or not child.attrib['id'] in noPeople):
+   if 'id' in child.attrib and (child.attrib['id'] in d or not child.attrib['id'] in ['lakes', 'gl']):
       s = int(d[child.attrib['id']][0]) if child.attrib['id'] in d else minRating
       color = scolor(minRating, maxRating, s)
       for path in child.iter('{http://www.w3.org/2000/svg}path'):
