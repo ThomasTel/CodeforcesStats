@@ -8,6 +8,7 @@ import unicodedata
 import sys  
 import random
 import io
+import numpy as np
 
 def random_color():
     r = lambda: random.randint(0,255)
@@ -15,10 +16,18 @@ def random_color():
 
 d = {}
 fr = io.open('ratings_treated_code.csv', 'r', encoding='utf8')
+ratings = []
+people = []
 for s in fr.read().splitlines():
    x = s.split(';')
-   d[x[0]] = x[1]
+   x[1] = int(x[1])
+   x[2] = int(x[2])
+   d[x[0]] = [x[1], x[2]]
+   ratings.append(x[1])
+   people.append(x[2])
+print np.mean(ratings), np.std(ratings)
 fr.close()
+
 tree = etree.parse('Codeforces_rating.svg')
 root = tree.getroot()[0]
 for child in root:
