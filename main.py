@@ -24,10 +24,13 @@ for s in fr.read().splitlines():
    x = s.split(';')
    x[1] = int(x[1])
    x[2] = int(x[2])
-   d[x[0]] = [x[1], x[2]]
+   d[x[0]] = x[1], x[2]
    ratings.append(x[1])
    people.append(x[2])
-minRating = min(ratings)
+for k, (a, b) in d.items():
+   if b < 5:
+      del d[k]
+minRating = min(ratings) - 50
 maxRating = max(ratings)
 #print np.mean(ratings), np.std(ratings)
 fr.close()
@@ -35,9 +38,10 @@ fr.close()
 tree = etree.parse('Codeforces_rating.svg')
 root = tree.getroot()[0]
 for child in root:
-   s = int(d[child.attrib['id']][0]) if 'id' in child.attrib and child.attrib['id'] in d else minRating
-   color = scolor(minRating, maxRating, s)
-   for path in child.iter('{http://www.w3.org/2000/svg}path'):
-      path.attrib['fill'] = color
+   if 'id' in child.attrib and not child.attrib['id'] in ['lakes', 'gl']:
+      s = int(d[child.attrib['id']][0]) if child.attrib['id'] in d else minRating
+      color = scolor(minRating, maxRating, s)
+      for path in child.iter('{http://www.w3.org/2000/svg}path'):
+         path.attrib['fill'] = color
 
 tree.write('Codeforces_rating_treated.svg')
